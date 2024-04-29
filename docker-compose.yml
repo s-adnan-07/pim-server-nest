@@ -1,0 +1,11 @@
+version: '3'
+services:
+  pim-server-nest:
+    container_name: pim-server-nest
+    build: ./
+    env_file:
+      - .env
+    ports:
+      - ${PORT}:${PORT}
+    restart: always
+    command: yarn start:prod
