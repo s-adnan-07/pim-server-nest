@@ -3,10 +3,27 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { Product, ProductReturnType } from '../schemas/product.schema'
 import { GetProductByModelDto } from '../dtos/get-product-by-model.dto'
+import { ItemStock } from '../schemas/item-stocks.schema'
 
 @Injectable()
 export class ProductsService {
-  constructor(@InjectModel('Product') private productModel: Model<Product>) {}
+  constructor(
+    @InjectModel('Product', 'pim-prod') private productModel: Model<Product>,
+    @InjectModel(ItemStock.name, 'oms')
+    private itemStockModel: Model<ItemStock>,
+  ) {}
+
+  async getStockDetails(erpItemCode?: string) {
+    const itemStock = await this.itemStockModel
+      .findOne({
+        itemCode: erpItemCode,
+      })
+      .select({ 'warehouse._id': false })
+
+    if (!itemStock) return []
+
+    return itemStock.warehouse
+  }
 
   getBaseProductDetails(product: ProductReturnType) {
     const NA: 'N/A' = 'N/A'
@@ -23,7 +40,7 @@ export class ProductsService {
     return { statusCode: HttpStatus.OK, product: baseProduct }
   }
 
-  getProductDetails(product: ProductReturnType) {
+  async getProductDetails(product: ProductReturnType) {
     const NA: 'N/A' = 'N/A'
     const cm: 'cm' = 'cm'
     const grams: 'g' = 'g'
@@ -39,6 +56,7 @@ export class ProductsService {
       whats_included,
       package_dimension,
       category,
+      erpItemCode,
     } = product
 
     const new_price = {
@@ -64,6 +82,9 @@ export class ProductsService {
       breadCrumbs: category?.[0]?.breadCrumbs ?? NA,
     }
 
+    const stocks = await this.getStockDetails(erpItemCode)
+
+    // TODO: Return ['N/A'] for empty arrays too, currently undefined values are only handled
     const filteredProduct = {
       model,
       brand: brand ?? NA,
@@ -76,6 +97,7 @@ export class ProductsService {
       package_dimension: new_dimension,
       category: [new_category],
       soloCategory: new_category,
+      stocks,
     }
 
     return { statusCode: HttpStatus.OK, product: filteredProduct }
