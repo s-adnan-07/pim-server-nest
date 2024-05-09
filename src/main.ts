@@ -1,15 +1,27 @@
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 import { ConfigService } from '@nestjs/config'
+import { Logger, ValidationPipe } from '@nestjs/common'
+import * as cookieParser from 'cookie-parser'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   const configService = app.get(ConfigService)
-  const PORT = configService.get('PORT')
+  const logger = new Logger('NestApplication')
 
+  const NODE_ENV = configService.get('NODE_ENV')
+  const PORT = NODE_ENV == 'development' ? 3301 : configService.get('PORT')
+
+  // * The below line is needed for class-validator to work
+  app.useGlobalPipes(new ValidationPipe())
+  app.use(cookieParser())
   app.enableCors()
 
   await app.listen(PORT)
+
+  logger.log('')
+  logger.log(`Running in ${NODE_ENV} mode`)
+  logger.log(`Listening on port ${PORT}`)
 }
 
 bootstrap()
