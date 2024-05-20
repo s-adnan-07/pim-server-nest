@@ -1,7 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { Product, ProductReturnType } from '../schemas/product.schema'
+import {
+  Image,
+  Product,
+  ProductReturnType,
+  S3Image,
+} from '../schemas/product.schema'
 import { GetProductByModelDto } from '../dtos/get-product-by-model.dto'
 import { ItemStock } from '../schemas/item-stocks.schema'
 
@@ -26,7 +31,7 @@ export class ProductsService {
   }
 
   getBaseProductDetails(product: ProductReturnType) {
-    const NA: 'N/A' = 'N/A'
+    const NA = 'N/A'
 
     const { itemId, searchTitle, brand, model } = product
 
@@ -41,14 +46,15 @@ export class ProductsService {
   }
 
   async getProductDetails(product: ProductReturnType) {
-    const NA: 'N/A' = 'N/A'
-    const cm: 'cm' = 'cm'
-    const grams: 'g' = 'g'
+    const NA = 'N/A'
+    const cm = 'cm'
+    const grams = 'g'
 
     const {
       model,
       brand,
       searchTitle,
+      images,
       s3Images,
       features,
       specification,
@@ -82,6 +88,13 @@ export class ProductsService {
       breadCrumbs: category?.[0]?.breadCrumbs ?? NA,
     }
 
+    // We are taking images from from the 'images' field if s3 images is empty or doesn't exist
+    let imageList: Array<S3Image | Image> = s3Images ?? []
+
+    if (imageList.length == 0) {
+      imageList = images ?? []
+    }
+
     const stocks = await this.getStockDetails(erpItemCode)
 
     // TODO: Return ['N/A'] for empty arrays too, currently undefined values are only handled
@@ -89,7 +102,7 @@ export class ProductsService {
       model,
       brand: brand ?? NA,
       searchTitle: searchTitle ?? NA,
-      s3Images: s3Images ?? [],
+      s3Images: imageList,
       features: features ?? [NA],
       specification: specification ?? [],
       price: new_price,
