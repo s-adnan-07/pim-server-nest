@@ -50,7 +50,7 @@ export class ProductsService {
     const cm = 'cm'
     const grams = 'g'
 
-    const {
+    let {
       model,
       brand,
       searchTitle,
@@ -64,6 +64,12 @@ export class ProductsService {
       category,
       erpItemCode,
     } = product
+
+    brand = brand ?? NA
+    searchTitle = searchTitle ?? NA
+    features = features.length == 0 ? null : features
+    specification = specification?.length == 0 ? null : specification
+    whats_included = whats_included?.length == 0 ? null : whats_included
 
     const new_price = {
       Maintive: price?.Maintive ?? NA,
@@ -100,17 +106,16 @@ export class ProductsService {
     // TODO: Return ['N/A'] for empty arrays too, currently undefined values are only handled
     const filteredProduct = {
       model,
-      brand: brand ?? NA,
-      searchTitle: searchTitle ?? NA,
-      s3Images: imageList,
-      features: features ?? [NA],
-      specification: specification ?? [],
-      price: new_price,
-      whats_included: whats_included ?? [NA],
-      package_dimension: new_dimension,
-      category: [new_category],
-      soloCategory: new_category,
+      brand,
+      searchTitle,
+      features,
+      specification,
+      whats_included,
       stocks,
+      s3Images: imageList,
+      price: new_price,
+      package_dimension: new_dimension,
+      soloCategory: new_category,
     }
 
     return { statusCode: HttpStatus.OK, product: filteredProduct }
