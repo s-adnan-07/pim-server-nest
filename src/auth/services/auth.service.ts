@@ -1,5 +1,5 @@
 import { Model } from 'mongoose'
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import * as bcrypt from 'bcrypt'
 
@@ -14,6 +14,8 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  private readonly logger = new Logger(AuthService.name, { timestamp: true })
+
   async login({ username, password }: LoginDetailsDto) {
     const person = await this.personModel.findOne({ username })
 
@@ -23,14 +25,23 @@ export class AuthService {
     )
 
     if (!person || !passwordsMatch) {
+      this.logger.error(`Invalid username or password for '${username}'`)
       throw new UnauthorizedException('Invalid username or password')
     }
 
-    // TODO: Sign the actual user from db once we connect to db
+    this.logger.log(`User '${username}' logged in successfully`)
     return this.jwtService.sign({ username })
   }
 
-  async comparePasswords(password = '', hashedPassword = '') {
+  comparePasswords(password = '', hashedPassword = '') {
     return bcrypt.compare(password, hashedPassword)
+  }
+
+  validateToken(token: string) {
+    try {
+      return this.jwtService.verifyAsync(token)
+    } catch (e) {
+      throw new UnauthorizedException()
+    }
   }
 }

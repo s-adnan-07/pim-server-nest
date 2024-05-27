@@ -1,6 +1,15 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Logger,
+  Post,
+  Req,
+  Res,
+} from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { Response } from 'express'
+import { Request, Response } from 'express'
 
 import LoginDetailsDto from '../dtos/login-details.dto'
 import { AuthService } from '../services/auth.service'
@@ -17,6 +26,8 @@ export class AuthController {
     private authService: AuthService,
     private configService: ConfigService,
   ) {}
+
+  private readonly logger = new Logger(AuthController.name, { timestamp: true })
 
   @Post('login')
   async login(
@@ -45,16 +56,28 @@ export class AuthController {
     return {
       statusCode: HttpStatus.OK,
       message: 'success',
+      user: loginDetails.username,
     }
   }
 
   @Post('logout')
   logout(@Res({ passthrough: true }) response: Response) {
     response.cookie('jwt', '', { maxAge: 0 })
+    // or the below line too
+    // response.clearCookie('jwt')
 
     return {
       statusCode: HttpStatus.OK,
       message: 'success',
     }
+  }
+
+  @Get('validate')
+  validate(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const token = request.cookies.jwt as string
+    return this.authService.validateToken(token)
   }
 }
