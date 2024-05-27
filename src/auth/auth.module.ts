@@ -5,9 +5,12 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { Person, PersonSchema } from './schemas/person.schema'
 import { JwtModule } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
+import { LocalStrategy } from './strategies/local.strategy'
+import { UsersModule } from '@/users/users.module'
 
 @Module({
   imports: [
+    UsersModule,
     MongooseModule.forFeature(
       [{ name: Person.name, schema: PersonSchema }],
       'pim-prod',
@@ -23,6 +26,6 @@ import { ConfigService } from '@nestjs/config'
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, LocalStrategy],
 })
 export class AuthModule {}

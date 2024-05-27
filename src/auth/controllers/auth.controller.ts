@@ -7,12 +7,14 @@ import {
   Post,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Request, Response } from 'express'
 
 import LoginDetailsDto from '../dtos/login-details.dto'
 import { AuthService } from '../services/auth.service'
+import { LocalGuard } from '../guards/local.guard'
 
 const THIRTY_DAYS = 30
 const TWENTY_FOUR_HOURS = 24
@@ -58,6 +60,12 @@ export class AuthController {
       message: 'success',
       user: loginDetails.username,
     }
+  }
+
+  @Post('login2')
+  @UseGuards(LocalGuard)
+  login2(@Body() loginDetails: LoginDetailsDto) {
+    return this.authService.validate(loginDetails)
   }
 
   @Post('logout')
