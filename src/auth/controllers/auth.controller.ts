@@ -7,6 +7,7 @@ import {
   Post,
   Req,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
@@ -14,7 +15,8 @@ import { Request, Response } from 'express'
 
 import LoginDetailsDto from '../dtos/login-details.dto'
 import { AuthService } from '../services/auth.service'
-import { LocalGuard } from '../guards/local.guard'
+import { JwtGuard } from '../guards/jwt.guard'
+import { Public } from '@/shared/decorators/public.decorator'
 
 const THIRTY_DAYS = 30
 const TWENTY_FOUR_HOURS = 24
@@ -31,6 +33,7 @@ export class AuthController {
 
   private readonly logger = new Logger(AuthController.name, { timestamp: true })
 
+  @Public()
   @Post('login')
   async login(
     @Body() loginDetails: LoginDetailsDto,
@@ -39,8 +42,9 @@ export class AuthController {
     const COOKIE_EXPIRY_IN_DAYS =
       this.configService.get<number>('COOKIE_EXPIRY_IN_DAYS') || THIRTY_DAYS
 
-    // TODO: Return some user details apart from token
     const token = await this.authService.login(loginDetails)
+
+    if (!token) throw new UnauthorizedException('Invalid username or password')
 
     const maxAge =
       COOKIE_EXPIRY_IN_DAYS *
@@ -62,12 +66,7 @@ export class AuthController {
     }
   }
 
-  @Post('login2')
-  @UseGuards(LocalGuard)
-  login2(@Body() loginDetails: LoginDetailsDto) {
-    return this.authService.validate(loginDetails)
-  }
-
+  @Public()
   @Post('logout')
   logout(@Res({ passthrough: true }) response: Response) {
     response.cookie('jwt', '', { maxAge: 0 })
@@ -87,5 +86,11 @@ export class AuthController {
   ) {
     const token = request.cookies.jwt as string
     return this.authService.validateToken(token)
+  }
+
+  @Get('status')
+  @UseGuards(JwtGuard)
+  status(@Req() req: Request) {
+    return req.user
   }
 }
