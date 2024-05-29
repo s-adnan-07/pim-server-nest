@@ -9,13 +9,17 @@ async function bootstrap() {
   const configService = app.get(ConfigService)
   const logger = new Logger('NestApplication')
 
-  const NODE_ENV = configService.get('NODE_ENV')
-  const PORT = NODE_ENV == 'development' ? 3301 : configService.get('PORT')
+  const NODE_ENV = configService.get<string>('NODE_ENV')
+  const PORT =
+    NODE_ENV == 'development' ? 3301 : configService.get<number>('PORT')
 
   // * The below line is needed for class-validator to work
   app.useGlobalPipes(new ValidationPipe())
   app.use(cookieParser())
-  app.enableCors()
+  app.enableCors({
+    origin: ['http://localhost:3000'],
+    credentials: true,
+  })
 
   await app.listen(PORT)
 
