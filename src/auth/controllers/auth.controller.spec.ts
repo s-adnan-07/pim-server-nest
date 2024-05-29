@@ -1,17 +1,16 @@
-import { Model } from 'mongoose'
+import { Response } from 'express'
 
 import { Test, TestingModule } from '@nestjs/testing'
 import { getModelToken } from '@nestjs/mongoose'
 import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
+import { HttpStatus, UnauthorizedException } from '@nestjs/common'
 
 import { UsersService } from '@/users/services/users.service'
 import { Person } from '@/users/schemas/person.schema'
 
 import { AuthController } from './auth.controller'
 import { AuthService } from '../services/auth.service'
-import { Response } from 'express'
-import { HttpStatus, UnauthorizedException } from '@nestjs/common'
 import LoginDetailsDto from '../dtos/login-details.dto'
 
 describe('AuthController', () => {
