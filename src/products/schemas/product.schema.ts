@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Types, model, Model } from 'mongoose'
+import mongoose, { Schema, Document, Types, Model } from 'mongoose'
 
 const docEnum = ['DATASHEETS', 'USERMANUALS', 'CERTIFICATES']
 

@@ -56,6 +56,7 @@ export class AuthController {
     response.cookie('jwt', token, {
       maxAge,
       httpOnly: true,
+      secure: true,
       sameSite: 'strict',
     })
 

@@ -46,6 +46,8 @@ export class ProductsService {
   }
 
   async getProductDetails(product: ProductReturnType) {
+    if (!product) return { product }
+
     const NA = 'N/A'
     const cm = 'cm'
     const grams = 'g'
@@ -72,9 +74,9 @@ export class ProductsService {
     whats_included = whats_included?.length == 0 ? null : whats_included
 
     const new_price = {
-      Maintive: price?.Maintive ?? NA,
-      ToolSelect: price?.ToolSelect ?? NA,
-      EndUser: price?.EndUser ?? NA,
+      Maintive: NA,
+      ToolSelect: NA,
+      EndUser: NA,
       Amazon: price?.Amazon ?? NA,
       Noon: price?.Noon ?? NA,
       OnlineReseller: price?.OnlineReseller ?? NA,
@@ -118,7 +120,7 @@ export class ProductsService {
       soloCategory: new_category,
     }
 
-    return { statusCode: HttpStatus.OK, product: filteredProduct }
+    return { product: filteredProduct }
   }
 
   async findBaseProductByModel({ model }: GetProductByModelDto) {
@@ -133,13 +135,6 @@ export class ProductsService {
 
   async findProductById(itemId: number) {
     const product = await this.productModel.findOne({ itemId })
-
-    if (!product) {
-      throw new HttpException(
-        `Product with itemId ${itemId} doesn't exist`,
-        HttpStatus.NOT_FOUND,
-      )
-    }
 
     return this.getProductDetails(product)
   }

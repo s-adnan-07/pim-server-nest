@@ -1,14 +1,19 @@
 # Directories
 node_modules
 dist
+coverage
+test
 .git
 .vscode
 
 # Files
 *.md
+*.spec.ts
 .env
+.env.development
 .gitignore
 .prettierrc
 .dockerignore
 .eslintrc.js
+.docker-compose.yml
 Dockerfile
