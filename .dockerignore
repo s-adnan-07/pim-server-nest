@@ -3,7 +3,9 @@ node_modules
 dist
 coverage
 test
+docker
 .git
+.github
 .vscode
 
 # Files
@@ -17,3 +19,4 @@ test
 .eslintrc.js
 .docker-compose.yml
 Dockerfile
+hash.js

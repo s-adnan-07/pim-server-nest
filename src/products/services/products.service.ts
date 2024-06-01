@@ -74,9 +74,9 @@ export class ProductsService {
     whats_included = whats_included?.length == 0 ? null : whats_included
 
     const new_price = {
-      Maintive: NA,
-      ToolSelect: NA,
-      EndUser: NA,
+      Maintive: price?.Maintive ?? NA,
+      ToolSelect: price?.ToolSelect ?? NA,
+      EndUser: price?.EndUser ?? NA,
       Amazon: price?.Amazon ?? NA,
       Noon: price?.Noon ?? NA,
       OnlineReseller: price?.OnlineReseller ?? NA,
