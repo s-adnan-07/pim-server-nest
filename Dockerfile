@@ -1,17 +1,19 @@
-FROM node:20.12.2
+FROM node:20.12.2-alpine as base
+WORKDIR /usr/src/app
 
-WORKDIR /usr/src/pim-server-nest
+FROM base as deps
+COPY package.json yarn.lock /usr/src/app/
+RUN yarn install --production=true --frozen-lockfile
 
-COPY package.json yarn.lock /usr/src/pim-server-nest/
-
-RUN yarn
-
+FROM deps as build
+COPY package.json yarn.lock /usr/src/app/
+RUN yarn install --frozen-lockfile
 COPY . .
-
-# EXPOSE $PORT
-
 RUN yarn build
 
-RUN rm -rf ./src
-
-# CMD ["yarn", "start:prod"]
+FROM base as final
+ENV NODE_ENV production
+USER node
+COPY package.json .
+COPY --from=deps /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/dist/ ./dist
