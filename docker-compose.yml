@@ -1,6 +1,6 @@
 services:
   pim-server-nest:
-    image: pim-server-nest
+    image: pim-server-nest:2.0.0
     container_name: pim-server-nest
     build: ./
     env_file:

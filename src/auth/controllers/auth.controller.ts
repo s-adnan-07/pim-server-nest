@@ -42,6 +42,8 @@ export class AuthController {
     const COOKIE_EXPIRY_IN_DAYS =
       this.configService.get<number>('COOKIE_EXPIRY_IN_DAYS') || THIRTY_DAYS
 
+    const domain = this.configService.get<string>('DOMAIN')
+
     const token = await this.authService.login(loginDetails)
 
     if (!token) throw new UnauthorizedException('Invalid username or password')
@@ -55,9 +57,10 @@ export class AuthController {
 
     response.cookie('jwt', token, {
       maxAge,
+      domain,
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: 'none',
     })
 
     return {
