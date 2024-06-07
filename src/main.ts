@@ -19,6 +19,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [HOST],
     credentials: true,
+    allowedHeaders: ['Content-Type'],
   })
 
   await app.listen(PORT)
