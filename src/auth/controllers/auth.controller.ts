@@ -18,11 +18,11 @@ import { AuthService } from '../services/auth.service'
 import { JwtGuard } from '../guards/jwt.guard'
 import { Public } from '@/shared/decorators/public.decorator'
 
-const THIRTY_DAYS = 30
-const TWENTY_FOUR_HOURS = 24
-const SIXTY_MINUTES = 60
-const SIXTY_SECONDS = 60
-const THOUSAND_MILLISECONDS = 1000
+// const THIRTY_DAYS = 30
+// const TWENTY_FOUR_HOURS = 24
+// const SIXTY_MINUTES = 60
+// const SIXTY_SECONDS = 60
+// const THOUSAND_MILLISECONDS = 1000
 
 @Controller('auth')
 export class AuthController {
@@ -39,31 +39,32 @@ export class AuthController {
     @Body() loginDetails: LoginDetailsDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const COOKIE_EXPIRY_IN_DAYS =
-      this.configService.get<number>('COOKIE_EXPIRY_IN_DAYS') || THIRTY_DAYS
+    // const COOKIE_EXPIRY_IN_DAYS =
+    //   this.configService.get<number>('COOKIE_EXPIRY_IN_DAYS') || THIRTY_DAYS
 
     const token = await this.authService.login(loginDetails)
 
     if (!token) throw new UnauthorizedException('Invalid username or password')
 
-    const maxAge =
-      COOKIE_EXPIRY_IN_DAYS *
-      TWENTY_FOUR_HOURS *
-      SIXTY_MINUTES *
-      SIXTY_SECONDS *
-      THOUSAND_MILLISECONDS
+    // const maxAge =
+    //   COOKIE_EXPIRY_IN_DAYS *
+    //   TWENTY_FOUR_HOURS *
+    //   SIXTY_MINUTES *
+    //   SIXTY_SECONDS *
+    //   THOUSAND_MILLISECONDS
 
-    response.cookie('jwt', token, {
-      maxAge,
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-    })
+    // response.cookie('jwt', token, {
+    //   maxAge,
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: 'none',
+    // })
 
     return {
       statusCode: HttpStatus.OK,
       message: 'success',
       user: loginDetails.username,
+      token,
     }
   }
 
