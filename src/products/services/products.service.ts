@@ -65,6 +65,7 @@ export class ProductsService {
       package_dimension,
       category,
       erpItemCode,
+      warranty,
     } = product
 
     brand = brand ?? NA
@@ -118,6 +119,7 @@ export class ProductsService {
       price: new_price,
       package_dimension: new_dimension,
       soloCategory: new_category,
+      warranty,
     }
 
     return { product: filteredProduct }
