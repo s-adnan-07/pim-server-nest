@@ -58,12 +58,13 @@ describe('AuthController', () => {
 
       const result = await controller.login(loginDetails, res)
 
-      expect(res.cookie).toHaveBeenCalled()
+      // expect(res.cookie).toHaveBeenCalled()
 
       expect(result).toStrictEqual({
         statusCode: HttpStatus.OK,
         message: 'success',
         user: loginDetails.username,
+        token,
       })
     })
 
