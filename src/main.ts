@@ -20,7 +20,6 @@ async function bootstrap() {
     origin: [HOST],
     methods: ['GET', 'POST', 'PUT'],
     credentials: true,
-    allowedHeaders: ['*'],
   })
 
   await app.listen(PORT)
