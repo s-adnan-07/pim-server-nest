@@ -60,6 +60,8 @@ export class AuthController {
     //   sameSite: 'none',
     // })
 
+    this.logger.log(`User ${loginDetails.username} logged in successfully`)
+
     return {
       statusCode: HttpStatus.OK,
       message: 'success',
