@@ -4,6 +4,10 @@ import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import * as Extractor from 'passport-jwt-cookie-extractor'
 
+interface Payload {
+  username: string
+}
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(configService: ConfigService) {
@@ -18,7 +22,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  validate(payload: any) {
-    return payload
+  // To access this value use req.user from express Request
+  validate({ username }: Payload) {
+    return username
   }
 }
