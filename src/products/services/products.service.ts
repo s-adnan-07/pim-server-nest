@@ -1,12 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+
 import {
   Image,
   Product,
   ProductReturnType,
   S3Image,
 } from '../schemas/product.schema'
+
 import { GetProductByModelDto } from '../dtos/get-product-by-model.dto'
 import { ItemStock } from '../schemas/item-stocks.schema'
 
@@ -42,7 +44,8 @@ export class ProductsService {
       searchTitle: searchTitle ?? NA,
     }
 
-    return { statusCode: HttpStatus.OK, product: baseProduct }
+    // return { statusCode: HttpStatus.OK, product: baseProduct }
+    return { ...baseProduct }
   }
 
   async getProductDetails(product: ProductReturnType) {
@@ -126,13 +129,15 @@ export class ProductsService {
   }
 
   async findBaseProductByModel({ model }: GetProductByModelDto) {
-    const product = await this.productModel.findOne({ model })
+    const cleaned = model.replace(/\W/gi, '.')
+    const pattern = new RegExp(cleaned, 'i')
+    const products = await this.productModel.find({ model: pattern }).limit(20)
 
-    if (!product) {
+    if (!products || products.length === 0) {
       throw new HttpException(`${model} doesn't exist`, HttpStatus.NOT_FOUND)
     }
 
-    return this.getBaseProductDetails(product)
+    return products.map(product => this.getBaseProductDetails(product))
   }
 
   async findProductById(itemId: number) {
