@@ -51,7 +51,7 @@ export class ProductsService {
   async getProductDetails(product: ProductReturnType) {
     if (!product) return { product }
 
-    const NA = 'N/A'
+    const NA = '-'
     const cm = 'cm'
     const grams = 'g'
 
