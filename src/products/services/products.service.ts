@@ -51,7 +51,7 @@ export class ProductsService {
   async getProductDetails(product: ProductReturnType) {
     if (!product) return { product }
 
-    const NA = '-'
+    const NA = '—'
     const cm = 'cm'
     const grams = 'g'
 
@@ -61,6 +61,7 @@ export class ProductsService {
       searchTitle,
       images,
       s3Images,
+      s3Documents,
       features,
       specification,
       price,
@@ -119,6 +120,7 @@ export class ProductsService {
       whats_included,
       stocks,
       s3Images: imageList,
+      s3Documents,
       price: new_price,
       package_dimension: new_dimension,
       soloCategory: new_category,
@@ -131,7 +133,9 @@ export class ProductsService {
   async findBaseProductByModel({ model }: GetProductByModelDto) {
     const cleaned = model.replace(/\W/gi, '.')
     const pattern = new RegExp(cleaned, 'i')
-    const products = await this.productModel.find({ model: pattern }).limit(20)
+    const products = await this.productModel
+      .find({ $or: [{ model: pattern }, { catalog_no: pattern }] })
+      .limit(20)
 
     if (!products || products.length === 0) {
       throw new HttpException(`${model} doesn't exist`, HttpStatus.NOT_FOUND)
