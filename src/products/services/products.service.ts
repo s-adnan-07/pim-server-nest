@@ -3,9 +3,9 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 
 import {
-  Image,
   Product,
   ProductReturnType,
+  S3Document,
   S3Image,
 } from '../schemas/product.schema'
 
@@ -102,11 +102,14 @@ export class ProductsService {
     }
 
     // We are taking images from from the 'images' field if s3 images is empty or doesn't exist
-    let imageList: Array<S3Image | Image> = s3Images ?? []
+    let imageList: Array<S3Image> = s3Images?.length > 0 ? s3Images : undefined
 
-    if (imageList.length == 0) {
-      imageList = images ?? []
-    }
+    // if (!imageList || imageList.length == 0) {
+    //   imageList = images ?? []
+    // }
+
+    let documentsList: Array<S3Document> =
+      s3Documents?.length > 0 ? s3Documents : undefined
 
     const stocks = await this.getStockDetails(erpItemCode)
 
@@ -120,7 +123,7 @@ export class ProductsService {
       whats_included,
       stocks,
       s3Images: imageList,
-      s3Documents,
+      s3Documents: documentsList,
       price: new_price,
       package_dimension: new_dimension,
       soloCategory: new_category,
