@@ -35,13 +35,14 @@ export class ProductsService {
   getBaseProductDetails(product: ProductReturnType) {
     const NA = 'N/A'
 
-    const { itemId, searchTitle, brand, model } = product
+    const { itemId, searchTitle, brand, model, s3Images } = product
 
     const baseProduct = {
       itemId,
       model,
       brand: brand ?? NA,
       searchTitle: searchTitle ?? NA,
+      thumbnail: s3Images?.[0]?.url,
     }
 
     // return { statusCode: HttpStatus.OK, product: baseProduct }
