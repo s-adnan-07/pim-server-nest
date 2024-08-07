@@ -17,7 +17,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe())
   app.use(cookieParser())
   app.enableCors({
-    origin: [HOST],
+    origin: [HOST, 'http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT'],
     credentials: true,
   })
