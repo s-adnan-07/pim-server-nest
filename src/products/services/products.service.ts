@@ -4,6 +4,7 @@ import { Model } from 'mongoose'
 
 import {
   Product,
+  ProductDocument,
   ProductReturnType,
   S3Document,
   S3Image,
@@ -137,9 +138,24 @@ export class ProductsService {
   async findBaseProductByModel({ model }: GetProductByModelDto) {
     const cleaned = model.replace(/\W/gi, '.')
     const pattern = new RegExp(cleaned, 'i')
-    const products = await this.productModel
-      .find({ $or: [{ model: pattern }, { catalog_no: pattern }] })
-      .limit(20)
+    // const products = await this.productModel
+    //   .find({ $or: [{ model: pattern }, { catalog_no: pattern }] })
+    //   .limit(20)
+
+    const products = await this.productModel.aggregate<ProductDocument>([
+      { $match: { $or: [{ model: pattern }, { catalog_no: pattern }] } },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'category.category',
+          foreignField: '_id',
+          as: 'cat',
+        },
+      },
+      { $unwind: { path: '$cat', preserveNullAndEmptyArrays: false } },
+      { $sort: { 'cat.aabtools.sortOrder': 1 } },
+      { $limit: 25 },
+    ])
 
     if (!products || products.length === 0) {
       throw new HttpException(`${model} doesn't exist`, HttpStatus.NOT_FOUND)

@@ -1,4 +1,10 @@
-import mongoose, { Schema, Document, Types, Model } from 'mongoose'
+import mongoose, {
+  Schema,
+  Document,
+  Types,
+  Model,
+  HydratedDocument,
+} from 'mongoose'
 
 const docEnum = ['DATASHEETS', 'USERMANUALS', 'CERTIFICATES']
 
@@ -255,6 +261,8 @@ export interface Product {
 
 export type ProductReturnType = Document<unknown, {}, Product> &
   Product & { _id: Types.ObjectId }
+
+export type ProductDocument = HydratedDocument<Product>
 
 export type ProductModelType = Model<
   Product,
